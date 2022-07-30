@@ -9,19 +9,19 @@ schema_str = """
           "description": "Cheque's id",
           "type": "string"
         },
-        "bk_sender_id": {
+        "payee_bank_id": {
           "description": "The issuer bank",
           "type": "number"
         },
-        "bk_receiver_id": {
+        "drawee_bank_id": {
           "description": "Issued bank",
           "type": "number"
         },
-        "issuer_account_id": {
+        "payee_id": {
           "description": "Issuer account's id",
           "type": "string"
         },
-        "issued_account_id": {
+        "drawee_id": {
           "description": "Issued account's id",
           "type": "string"
         },
@@ -34,7 +34,7 @@ schema_str = """
           "type": "number"
         }
       },
-      "required": [ "chk_id", "bk_sender_id", "bk_receiver_id", "issuer_account_id", "date", "chk_amount" ]
+      "required": [ "chk_id", "payee_bank_id", "drawee_bank_id", "payee_id", "date", "chk_amount" ]
     }
     """
 

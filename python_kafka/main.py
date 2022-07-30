@@ -63,25 +63,25 @@ async def deposit_new_check(request: Request):
 
         logger.info('inbound request to deposit new cheque')
 
-        bk_sender_id = request_json["bk_sender_id"]
-        bk_receiver_id = request_json["bk_receiver_id"]
+        payee_bank_id = request_json["payee_bank_id"]
+        drawee_bank_id = request_json["drawee_bank_id"]
 
-        if bk_sender_id not in banks_dict or bk_receiver_id not in banks_dict:
+        if payee_bank_id not in banks_dict or drawee_bank_id not in banks_dict:
             raise HTTPException(status_code=400, detail="Receiver / Sender bank id does not exist")
 
-        if request_json["issuer_account_id"] not in banks_dict[bk_receiver_id].bank_accounts or request_json["issued_account_id"] not in banks_dict[bk_sender_id].bank_accounts:
+        if request_json["payee_id"] not in banks_dict[payee_bank_id].bank_accounts or request_json["drawee_id"] not in banks_dict[drawee_bank_id].bank_accounts:
             raise HTTPException(status_code=400,
                                 detail="Issuer / Issued account ID does not exist at the receiver / sender bank")
 
-        cheque = Cheque(bk_sender_id=bk_sender_id,
-                        bk_receiver_id=bk_receiver_id,
-                        issuer_account_id=request_json["issuer_account_id"],
-                        issued_account_id=request_json["issued_account_id"],
+        cheque = Cheque(payee_bank_id=payee_bank_id,
+                        drawee_bank_id=drawee_bank_id,
+                        payee_id=request_json["payee_id"],
+                        drawee_id=request_json["drawee_id"],
                         chk_amount=request_json["chk_amount"])
 
-        topic = f'{cheque.bk_receiver_id}.funds.cheques.clearinghouse'
+        topic = f'{cheque.drawee_bank_id}.funds.cheques.clearinghouse'
 
-        await to_kafka(topic=topic, key=cheque.issuer_account_id, value=cheque, mapper=check_to_dict)
+        await to_kafka(topic=topic, key=cheque.payee_id, value=cheque, mapper=check_to_dict)
 
     except Exception as e:
         raise e

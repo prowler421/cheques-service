@@ -21,16 +21,16 @@ async def process_clearinghouse(cheque: Cheque):
     logger.info('processing new cheque in clearinghouse')
 
     is_stable = is_cheque_stable(cheque)
-    topic = f'{cheque.bk_sender_id}.funds.cheques.stales' if is_stable else f'{cheque.bk_sender_id}.funds.cheques.postdated'
+    topic = f'{cheque.payee_bank_id}.funds.cheques.stales' if is_stable else f'{cheque.payee_bank_id}.funds.cheques.postdated'
 
     logger.info('cheque validity: {0} - pushing message to topic: {1}'.format(is_stable, topic))
-    await to_kafka(topic=topic, key=cheque.issuer_account_id, value=cheque, mapper=check_to_dict)
+    await to_kafka(topic=topic, key=cheque.payee_id, value=cheque, mapper=check_to_dict)
 
 
 async def process_stales(cheque: Cheque):
     logger.info('processing stale cheque: {0}'.format(cheque))
-    banks_dict[cheque.bk_sender_id].bank_accounts[cheque.issuer_account_id] += cheque.chk_amount
-    banks_dict[cheque.bk_receiver_id].bank_accounts[cheque.issued_account_id] -= cheque.chk_amount
+    banks_dict[cheque.payee_bank_id].bank_accounts[cheque.payee_id] += cheque.chk_amount
+    banks_dict[cheque.drawee_bank_id].bank_accounts[cheque.drawee_id] -= cheque.chk_amount
 
 
 async def process_postdated(cheque: Cheque):
