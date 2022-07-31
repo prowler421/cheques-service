@@ -8,6 +8,9 @@ logger = get_logger(__name__)
 
 
 async def create_kafka_topics():
+
+    logger.info("creating new kafka topics...")
+
     admin_client = AdminClient({
         "bootstrap.servers": os.getenv("BOOTSTRAP_SERVERS")
     })

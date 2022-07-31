@@ -1,0 +1,17 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  my-rabbit:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  cheques-svc:
+    working_dir: "."
+    image: "service"
+    ports:
+      - "5000:8000"
+    depends_on:
+      - "my-rabbit"
+    restart: unless-stopped
+    command:
+      [ "python","./dev_main.py" ]
